@@ -4,16 +4,13 @@
 (defn value_at_addr [memory addr]
   (nth memory (nth memory addr)))
 
-(defn op_add [memory pc]
-  (assoc memory (nth memory (+ pc 3)) (+ (value_at_addr memory (+ pc 1)) (value_at_addr memory (+ pc 2)))))
-
-(defn op_mul [memory pc]
-  (assoc memory (nth memory (+ pc 3)) (* (value_at_addr memory (+ pc 1)) (value_at_addr memory (+ pc 2)))))
+(defn op_quad [memory pc func]
+  (assoc memory (nth memory (+ pc 3)) (func (value_at_addr memory (+ pc 1)) (value_at_addr memory (+ pc 2)))))
 
 (defn execute [memory pc]
   (case (nth memory pc)
-    1 (execute (op_add memory pc) (+ pc 4))
-    2 (execute (op_mul memory pc) (+ pc 4))
+    1 (execute (op_quad memory pc +) (+ pc 4))
+    2 (execute (op_quad memory pc *) (+ pc 4))
     99 memory
     "wtf"))
 
