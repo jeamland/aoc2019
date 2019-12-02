@@ -16,5 +16,5 @@
 
 (defn -main
   [& _args]
-  (def memory (mapv #(Integer/parseInt %) (clojure.string/split (clojure.string/trim-newline (slurp *in*)) #",")))
-  (println (execute memory 0)))
+  (let [memory (mapv #(Integer/parseInt %) (clojure.string/split (clojure.string/trim-newline (slurp *in*)) #","))]
+    (println (execute memory 0))))
