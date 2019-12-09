@@ -2,11 +2,12 @@ use std::fs::File;
 use std::io::prelude::*;
 use std::io::{self, BufReader};
 
+type Addr = u32;
 type Cell = i64;
 
 struct Intcode {
     memory: Vec<Cell>,
-    pc: u32,
+    pc: Addr,
     relative_base: Cell,
 }
 
@@ -34,7 +35,7 @@ impl Intcode {
         (opcode as u32, Modes::new(modes))
     }
 
-    fn addr(&mut self, addr: u32, mode: u32) -> usize {
+    fn addr(&mut self, addr: Addr, mode: u32) -> usize {
         let addr = match mode {
             0 => self.memory[addr as usize] as usize,
             1 => addr as usize,
@@ -49,12 +50,12 @@ impl Intcode {
         addr
     }
 
-    fn get(&mut self, addr: u32, mode: u32) -> Cell {
+    fn get(&mut self, addr: Addr, mode: u32) -> Cell {
         let addr = self.addr(addr, mode);
         self.memory[addr]
     }
 
-    fn set(&mut self, addr: u32, mode: u32, value: Cell) {
+    fn set(&mut self, addr: Addr, mode: u32, value: Cell) {
         let addr = self.addr(addr, mode);
         self.memory[addr] = value;
     }
@@ -77,7 +78,7 @@ impl Intcode {
     {
         modes.ensure(2);
         if op(self.get(self.pc + 1, modes.0[0])) {
-            self.pc = self.get(self.pc + 2, modes.0[1]) as u32;
+            self.pc = self.get(self.pc + 2, modes.0[1]) as Addr;
         } else {
             self.pc += 3;
         }
